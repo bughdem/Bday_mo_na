@@ -63,7 +63,7 @@ canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
 <div class="meter" id="meter" aria-hidden="true"><i id="bar"></i></div>
 
 <div class="row">
-  <input id="name" placeholder="Type your name, sis" maxlength="24" aria-label="Name for the birthday message">
+  <input id="name" placeholder="Type your name" maxlength="24" aria-label="Name for the birthday message">
   <button id="fallback" hidden>Mic not working? Tap to blow</button>
   <button id="again" hidden>Do it again</button>
 </div>
@@ -151,7 +151,7 @@ canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
     document.body.classList.add("dim");
     var n=nameEl.value.trim();
     title.textContent=n?"Happy birthday, "+n+"!":"Happy birthday!";
-    sub.textContent="Sana maging masaya ka habang buhay at mahanap mo na ang tamang tao na mamahalin ka habang buhay, wag na si james ha, joke!";
+    sub.textContent="Sana maging masaya ka habang buhay at mahanap mo na ang tamang tao na pipiliin ka sa araw-araw, mbtc and Godbless!";
     again.hidden=false;confetti();
   }
   function reset(){
