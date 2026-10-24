@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Blow out the candles</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,800&family=Nunito:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff1e6;--ink:#3b1f2b;--soft:#7a5563;--cream:#fffaf3;--frost:#ff8fab;--frost2:#ffc2d1;--sponge:#f6c177;--plate:#e9d5c3;--btn:#3b1f2b;--btnink:#fff1e6;--flame:#ffb703}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#1d1020;--ink:#ffe8f0;--soft:#c9a3b4;--cream:#fff3e6;--frost:#ff7aa2;--frost2:#ffb3c8;--sponge:#e8a95a;--plate:#4a3050;--btn:#ffe8f0;--btnink:#1d1020}}
+:root[data-theme="dark"]{--bg:#1d1020;--ink:#ffe8f0;--soft:#c9a3b4;--cream:#fff3e6;--frost:#ff7aa2;--frost2:#ffb3c8;--sponge:#e8a95a;--plate:#4a3050;--btn:#ffe8f0;--btnink:#1d1020}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Nunito",system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;text-align:center;overflow:hidden;padding:1rem;transition:background .6s}
+body.dim{background:#140a17;--ink:#ffe8f0;--soft:#c9a3b4}
+h1{font-family:"Fraunces",Georgia,serif;font-weight:800;font-size:clamp(2rem,8vw,3.6rem);line-height:1.05;margin:0;min-height:1.1em}
+p{margin:0;color:var(--soft);font-size:1.05rem;max-width:32ch;min-height:3em}
+#cake{width:min(86vw,360px);height:auto;overflow:visible;touch-action:manipulation}
+#hit{cursor:pointer;fill:transparent}
+#hit:focus-visible{outline:3px solid var(--frost)}
+.sway{transform-origin:50% 100%;transform-box:fill-box}
+.flame{transform-origin:50% 100%;transform-box:fill-box;animation:flick .35s ease-in-out infinite alternate}
+.flame.b{animation-duration:.45s}
+@keyframes flick{from{transform:scale(1,1) rotate(-3deg)}to{transform:scale(.88,1.12) rotate(3deg)}}
+.sway.gone{opacity:0;transition:opacity .2s}
+.smoke{opacity:0}
+.smoke.go{animation:rise 2.2s ease-out forwards}
+@keyframes rise{0%{opacity:.7;transform:translateY(0)}100%{opacity:0;transform:translateY(-50px)}}
+.ring{fill:none;stroke:var(--frost);stroke-width:3;stroke-dasharray:6 6;transform-origin:150px 70px;animation:pulse 1.4s ease-in-out infinite}
+.ring.hide{display:none}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+.meter{width:min(70vw,240px);height:10px;border-radius:999px;background:var(--plate);overflow:hidden;visibility:hidden}
+.meter.on{visibility:visible}
+.meter i{display:block;height:100%;width:0;background:var(--frost)}
+.row{display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center}
+button,input{font:inherit}
+button{background:var(--btn);color:var(--btnink);border:0;border-radius:999px;padding:.8rem 1.5rem;font-weight:700;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--frost);outline-offset:3px}
+button[hidden]{display:none}
+input{border:2px solid var(--soft);background:transparent;color:var(--ink);border-radius:999px;padding:.7rem 1.1rem;width:11rem;text-align:center}
+canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+@media (prefers-reduced-motion:reduce){.flame,.ring{animation:none}}
+</style>
+</head>
+<body>
+<h1 id="title">Make a wish.</h1>
+<p id="sub">Tap the candles on the cake, then blow into your microphone.</p>
+
+<svg id="cake" viewBox="0 0 300 260" role="img" aria-label="Birthday cake with five lit candles">
+  <ellipse cx="150" cy="238" rx="140" ry="16" fill="var(--plate)"/>
+  <rect x="40" y="150" width="220" height="82" rx="14" fill="var(--sponge)"/>
+  <rect x="62" y="96" width="176" height="62" rx="14" fill="var(--cream)"/>
+  <path d="M62 112 q0-16 16-16 h144 q16 0 16 16 v6 q-10 14-20 0 q-10 16-20 0 q-10 16-20 0 q-10 16-20 0 q-10 16-20 0 q-10 16-20 0 q-10 14-20 0z" fill="var(--frost)"/>
+  <path d="M40 166 q0-12 14-12 h192 q14 0 14 12 v6 q-9 14-19 0 q-9 16-19 0 q-9 16-19 0 q-9 16-19 0 q-9 16-19 0 q-9 16-19 0 q-9 16-19 0 q-9 16-19 0 q-9 14-19 0z" fill="var(--frost2)"/>
+  <g fill="var(--frost)"><circle cx="90" cy="206" r="5"/><circle cx="150" cy="212" r="5"/><circle cx="210" cy="206" r="5"/></g>
+  <g id="candles"></g>
+  <rect id="ringRect" class="ring" x="82" y="24" width="136" height="84" rx="16"/>
+  <rect id="hit" x="82" y="24" width="136" height="84" rx="16" tabindex="0" role="button" aria-label="Tap the candles to start"/>
+</svg>
+
+<div class="meter" id="meter" aria-hidden="true"><i id="bar"></i></div>
+
+<div class="row">
+  <input id="name" placeholder="Their name" maxlength="24" aria-label="Name for the birthday message">
+  <button id="fallback" hidden>Mic not working? Tap to blow</button>
+  <button id="again" hidden>Do it again</button>
+</div>
+<canvas id="fx"></canvas>
+
+<script>
+(function(){
+  var colors=["#8ecae6","#ffb703","#90be6d","#c77dff","#ff6b6b"], xs=[100,125,150,175,200], html="";
+  xs.forEach(function(x,i){
+    html+='<rect x="'+(x-4)+'" y="62" width="8" height="38" rx="2" fill="'+colors[i]+'"/>'+
+    '<g class="sway" data-i="'+i+'"><g class="flame '+(i%2?'b':'')+'"><path d="M'+x+' 36 q-9 12 -5 20 q5 6 10 0 q4 -8 -5 -20z" fill="var(--flame)"/><ellipse cx="'+x+'" cy="54" rx="2.5" ry="4" fill="#fff6d6"/></g></g>'+
+    '<path class="smoke" data-i="'+i+'" d="M'+x+' 56 q-6 -10 0 -18 q6 -8 0 -16" fill="none" stroke="var(--soft)" stroke-width="2" stroke-linecap="round"/>';
+  });
+  document.getElementById("candles").innerHTML=html;
+
+  var $=function(id){return document.getElementById(id)};
+  var title=$("title"),sub=$("sub"),hit=$("hit"),ring=$("ringRect"),meter=$("meter"),bar=$("bar"),
+      fb=$("fallback"),again=$("again"),nameEl=$("name"),cake=$("cake");
+  var sways=[].slice.call(document.querySelectorAll(".sway")),smokes=[].slice.call(document.querySelectorAll(".smoke"));
+  var state="idle",progress=0,ctx=null,stream=null,analyser=null,buf=null,baseline=0,frames=0,raf=0;
+
+  function tapStart(){
+    if(state!=="idle")return;
+    state="asking";
+    ring.classList.add("hide");
+    sub.textContent="Allow the microphone when asked, then blow on your phone or laptop.";
+    if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)){return noMic();}
+    navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}})
+      .then(function(s){
+        stream=s;
+        var AC=window.AudioContext||window.webkitAudioContext;
+        ctx=new AC();
+        if(ctx.resume)ctx.resume();
+        analyser=ctx.createAnalyser();analyser.fftSize=1024;
+        ctx.createMediaStreamSource(s).connect(analyser);
+        buf=new Uint8Array(analyser.fftSize);
+        state="listening";progress=0;baseline=0;frames=0;
+        title.textContent="Now blow!";
+        sub.textContent="Take a deep breath and blow hard at the mic.";
+        meter.classList.add("on");
+        loop();
+      })
+      .catch(noMic);
+  }
+  function noMic(){
+    state="nomic";
+    title.textContent="Make a wish.";
+    sub.textContent="The microphone isn't available here, so tap the button to blow instead.";
+    fb.hidden=false;
+  }
+  function level(){
+    analyser.getByteTimeDomainData(buf);
+    var sum=0;for(var i=0;i<buf.length;i++){var v=(buf[i]-128)/128;sum+=v*v;}
+    return Math.sqrt(sum/buf.length);
+  }
+  function loop(){
+    if(state!=="listening")return;
+    var l=level();frames++;
+    if(frames<=30){baseline=Math.max(baseline,l);}
+    else{
+      var thr=Math.max(0.12,baseline*3+0.05);
+      progress+= l>thr ? 0.035 : -0.012;
+      progress=Math.max(0,Math.min(1,progress));
+      var lean=l>thr?Math.min(25,(l/thr)*10):0;
+      sways.forEach(function(s,i){
+        s.style.transform="rotate("+(lean*(1+i*0.05))+"deg) scale("+(1-progress*0.55)+")";
+      });
+      bar.style.width=(progress*100)+"%";
+      if(progress>=1)return blowOut();
+    }
+    raf=requestAnimationFrame(loop);
+  }
+  function stopMic(){
+    cancelAnimationFrame(raf);
+    if(stream){stream.getTracks().forEach(function(t){t.stop();});stream=null;}
+    if(ctx){try{ctx.close();}catch(e){}ctx=null;}
+  }
+  function blowOut(){
+    stopMic();state="done";
+    sways.forEach(function(s,i){setTimeout(function(){s.classList.add("gone");smokes[i].classList.add("go");},i*110);});
+    meter.classList.remove("on");fb.hidden=true;
+    setTimeout(celebrate,600);
+  }
+  function celebrate(){
+    document.body.classList.add("dim");
+    var n=nameEl.value.trim();
+    title.textContent=n?"Happy birthday, "+n+"!":"Happy birthday!";
+    sub.textContent="Sana maging masaya ka habang buhay, sis!";
+    again.hidden=false;confetti();
+  }
+  function reset(){
+    stopMic();state="idle";progress=0;
+    document.body.classList.remove("dim");
+    sways.forEach(function(s){s.classList.remove("gone");s.style.transform="";});
+    smokes.forEach(function(s){s.classList.remove("go");});
+    ring.classList.remove("hide");meter.classList.remove("on");bar.style.width="0";
+    fb.hidden=true;again.hidden=true;
+    title.textContent="Make a wish.";
+    sub.textContent="Tap the candles on the cake, then blow into your microphone.";
+  }
+  hit.addEventListener("click",tapStart);
+  hit.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();tapStart();}});
+  fb.addEventListener("click",blowOut);
+  again.addEventListener("click",reset);
+
+  var cv=$("fx"),cx=cv.getContext("2d"),parts=[],run=false;
+  function size(){cv.width=innerWidth*devicePixelRatio;cv.height=innerHeight*devicePixelRatio;}
+  size();addEventListener("resize",size);
+  function confetti(){
+    if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+    var pal=["#ff8fab","#ffb703","#8ecae6","#90be6d","#c77dff","#fff"],d=devicePixelRatio;
+    for(var i=0;i<160;i++){
+      var a=Math.random()*Math.PI*2,s=(6+Math.random()*10)*d;
+      parts.push({x:cv.width/2,y:cv.height*0.45,vx:Math.cos(a)*s,vy:Math.sin(a)*s-6*d,w:(6+Math.random()*6)*d,h:(4+Math.random()*5)*d,r:Math.random()*6,vr:(Math.random()-.5)*.4,c:pal[i%pal.length],life:1});
+    }
+    if(!run){run=true;requestAnimationFrame(tick);}
+  }
+  function tick(){
+    cx.clearRect(0,0,cv.width,cv.height);
+    parts=parts.filter(function(p){return p.life>0&&p.y<cv.height+40;});
+    parts.forEach(function(p){
+      p.x+=p.vx;p.y+=p.vy;p.vy+=.35*devicePixelRatio;p.vx*=.985;p.r+=p.vr;p.life-=.005;
+      cx.save();cx.globalAlpha=Math.max(p.life,0);cx.translate(p.x,p.y);cx.rotate(p.r);
+      cx.fillStyle=p.c;cx.fillRect(-p.w/2,-p.h/2,p.w,p.h);cx.restore();
+    });
+    if(parts.length)requestAnimationFrame(tick);else run=false;
+  }
+})();
+</script>
+</body>
+</html>
